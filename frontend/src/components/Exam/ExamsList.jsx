@@ -12,4 +12,4 @@ const ExamsList = ({ exams }) => {
   );
 };
 
-export default ExamsList;
+export default ExamsList;                                                          
