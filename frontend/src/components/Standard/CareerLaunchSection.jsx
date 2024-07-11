@@ -7,36 +7,37 @@ const CareerLaunchSection = () => {
     <div className="bg-white p-6 md:p-10">
       <header className="flex justify-between items-center mb-8">
         <div className="flex items-center">
-          <img src="logo.png" alt="Career Launch Icon" className="w-64 mr-3" />
-
+          <img src="logo.png" alt="Career Launch Icon" className="w-16 h-16 mr-3" />
+          <div>
+            <h1 className="text-2xl font-bold text-but-sky-blue">Career Launch</h1>
+            <p className="text-sm text-gray-600">Transform Dreams into Careers</p>
+          </div>
         </div>
         <div className="flex items-center">
-          <input type="search" placeholder="Search..." className="border rounded-full px-4 py-2 border-teal-500 mr-4" />
-          <a href="#" className="text-blue-500 hover:underline">Sign up / Login Here</a>
+          <input type="search" placeholder="Search..." className="border rounded-l px-4 py-2 border-but-sky-blue" />
+          <button className="bg-but-sky-blue text-white px-4 py-2 rounded-r">Search</button>
+          <a href="#" className="text-but-sky-blue hover:underline ml-4">Sign up / Login Here</a>
         </div>
       </header>
 
       <div className="flex flex-col md:flex-row justify-between items-center">
         <div className="md:w-1/2 mb-6 md:mb-0 flex flex-wrap">
-          <div className="flex mb-6">
-            <img src={leftImg} alt="Career Launch Icon" className="mr-3 w-[300px]" />
-
-          </div>
+          <img src={leftImg} alt="Career Opportunities" className="w-full mb-6" />
           <div>
-            <p className="text-lg mb-6 text-teal-500 w-[400px]">
+            <p className="text-lg mb-6 text-gray-700">
               Ready to take the next step in your career? Discover exciting
               job openings in various sectors and unlock your potential
               with a fulfilling new role
             </p>
             <div className="space-y-4">
-              <button className="w-full bg-teal-500 text-white py-3 rounded-full font-bold">JOBS</button>
-              <button className="w-full bg-white text-teal-500 py-3 rounded-full font-bold border border-teal-500">ACADEMICS</button>
+              <button className="w-full bg-but-sky-blue text-white py-3 rounded-md font-bold">JOBS</button>
+              <button className="w-full bg-white text-but-sky-blue py-3 rounded-md font-bold border border-but-sky-blue">ACADEMICS</button>
             </div>
           </div>
         </div>
 
         <div className="md:w-1/2 flex justify-center">
-          <img src={rightImg} alt="Interview Illustration" className="w-[300px]"  />
+          <img src={rightImg} alt="Interview Illustration" className="w-full max-w-md" />
         </div>
       </div>
     </div>

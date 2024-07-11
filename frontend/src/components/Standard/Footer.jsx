@@ -9,7 +9,6 @@ function Footer() {
           <Typography variant="h6" className="font-bold uppercase mb-2">Useful Links</Typography>
           <ul className='flex flex-col'>
             <ul className='flex gap-3'>
-
               <li className="mb-1">
                 <a href="#" className="text-white hover:text-white">RTI</a>
               </li>
@@ -27,7 +26,6 @@ function Footer() {
               </li>
             </ul>
             <ul className='flex gap-3'>
-
               <li className="mb-1">
                 <a href="#" className="text-white hover:text-white">Terms & Conditions</a>
               </li>
