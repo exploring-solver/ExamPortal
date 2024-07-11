@@ -1,31 +1,28 @@
-const sectorModel = require('../models/sectorModel');
+const Sector = require('../models/sector');
 
-module.exports = (fastify) => {
-  const model = sectorModel(fastify);
-
-  const getAllSectors = async (request, reply) => {
+class SectorController {
+  static async createSector(request, reply) {
     try {
-      const sectors = await model.getAllSectors();
-      return reply.send(sectors);
+      const sectorData = request.body;
+      console.log('Received sector data:', sectorData); 
+      const result = await Sector.create(sectorData);
+      console.log('Sector created:', result); 
+      reply.code(201).send({ id: result[0], ...sectorData });
     } catch (error) {
-      fastify.log.error(error);
-      return reply.status(500).send('An error occurred while retrieving sectors');
+      console.error('Error creating sector:', error); 
+      reply.code(500).send({ error: 'Internal Server Error', details: error.message });
     }
-  };
+  }
 
-  const createSector = async (request, reply) => {
+
+  static async getSectors(request, reply) {
     try {
-      const newSector = request.body;
-      await model.createSector(newSector);
-      return reply.status(201).send('Sector created successfully');
+      const sectors = await Sector.getAll();
+      reply.send(sectors);
     } catch (error) {
-      fastify.log.error(error);
-      return reply.status(500).send('An error occurred while creating the sector');
+      reply.code(500).send({ error: 'Internal Server Error' });
     }
-  };
+  }
+}
 
-  return {
-    getAllSectors,
-    createSector,
-  };
-};
+module.exports = SectorController;

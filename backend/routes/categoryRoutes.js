@@ -1,8 +1,8 @@
-const categoryController = require('../controllers/categoryController');
+const CategoryController = require('../controllers/categoryController');
 
-module.exports = async function(fastify, opts) {
-  const controller = categoryController(fastify);
+async function categoryRoutes(fastify, options) {
+  fastify.post('/categories', CategoryController.createCategory);
+  fastify.get('/categories', CategoryController.getCategories);
+}
 
-  fastify.get('/categories', controller.getAllCategories);
-  fastify.post('/categories', controller.createCategory);
-};
+module.exports = categoryRoutes;

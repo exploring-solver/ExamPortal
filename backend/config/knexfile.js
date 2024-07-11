@@ -14,7 +14,11 @@ const knexConfig = {
   },
   seeds: {
     directory: './seeds'
-  }
+  },
+  debug: true
 };
 
-module.exports = knex(knexConfig);
+const db = knex(knexConfig);
+
+module.exports = db;
+

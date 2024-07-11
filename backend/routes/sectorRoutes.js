@@ -1,8 +1,8 @@
-const sectorController = require('../controllers/sectorController');
+const SectorController = require('../controllers/sectorController');
 
-module.exports = async function(fastify, opts) {
-  const controller = sectorController(fastify);
+async function sectorRoutes(fastify, options) {
+  fastify.post('/sectors', SectorController.createSector);
+  fastify.get('/sectors', SectorController.getSectors);
+}
 
-  fastify.get('/sectors', controller.getAllSectors);
-  fastify.post('/sectors', controller.createSector);
-};
+module.exports = sectorRoutes;

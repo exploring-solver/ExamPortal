@@ -1,9 +1,8 @@
-const examController = require('../controllers/examController');
+const ExamController = require('../controllers/examController');
 
-module.exports = async function(fastify, opts) {
-  const controller = examController(fastify);
+async function examRoutes(fastify, options) {
+  fastify.post('/exams', ExamController.createExam);
+  fastify.get('/exams', ExamController.getExams);
+}
 
-  fastify.get('/exams', controller.getAllExams);
-  fastify.get('/exams/filter', controller.getExamsByCategoryAndSector);
-  fastify.post('/exams', controller.createExam);
-};
+module.exports = examRoutes;

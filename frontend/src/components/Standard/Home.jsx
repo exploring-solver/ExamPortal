@@ -2,22 +2,24 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import SectorTabs from '../Exam/SectorTabs';
 import ExamsList from '../Exam/ExamsList';
+import { Button } from '@material-tailwind/react';
+import CareerLaunchSection from './CareerLaunchSection';
 
 const Home = () => {
   const [sectors, setSectors] = useState([]);
   const [categories, setCategories] = useState([]);
   const [exams, setExams] = useState([]);
-  const [selectedSector, setSelectedSector] = useState(null);
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedSector, setSelectedSector] = useState(1);
+  const [selectedCategory, setSelectedCategory] = useState(1);
 
   useEffect(() => {
     const fetchSectors = async () => {
-      const response = await axios.get('http://localhost:3000/sectors');
+      const response = await axios.get('http://localhost:3000/api/sectors');
       setSectors(response.data);
     };
 
     const fetchCategories = async () => {
-      const response = await axios.get('http://localhost:3000/categories');
+      const response = await axios.get('http://localhost:3000/api/categories');
       setCategories(response.data);
     };
 
@@ -28,7 +30,7 @@ const Home = () => {
   useEffect(() => {
     if (selectedSector && selectedCategory) {
       const fetchExams = async () => {
-        const response = await axios.get(`http://localhost:3000/exams/${selectedCategory}/${selectedSector}`);
+        const response = await axios.get(`http://localhost:3000/api/exams?sectorId=${selectedSector}&categoryId=${selectedCategory}`);
         setExams(response.data);
       };
 
@@ -46,17 +48,19 @@ const Home = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Career Launch</h1>
+      <CareerLaunchSection/>
+      <h1 className="text-4xl font-bold mb-6 text-center text-blue-900">Career Launch</h1>
       <SectorTabs sectors={sectors} onSectorClick={handleSectorClick} />
-      <div className="flex justify-center mt-4">
+      <div className="flex justify-center mt-6">
         {categories.map(category => (
-          <button 
+          <Button 
             key={category.id} 
-            className="p-2 bg-gray-200 hover:bg-gray-300 rounded m-2"
+            color="blue"
+            className="mx-2"
             onClick={() => handleCategoryClick(category.id)}
           >
             {category.name}
-          </button>
+          </Button>
         ))}
       </div>
       <ExamsList exams={exams} />

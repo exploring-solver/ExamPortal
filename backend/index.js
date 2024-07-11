@@ -2,8 +2,10 @@ const fastify = require('fastify')({ logger: true });
 const examRoutes = require('./routes/examRoutes');
 const sectorRoutes = require('./routes/sectorRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
-const knex = require('./config/knexfile'); 
+const knex = require('./config/knexfile');
+const healthRoutes = require('./src/health/routes/health');
 
+fastify.register(require('@fastify/formbody'));
 fastify.register(require('@fastify/cors'), (instance) => {
   return (req, callback) => {
     const corsOptions = {
@@ -25,13 +27,10 @@ fastify.register(require('fastify-plugin')(async (fastify) => {
   fastify.decorate('knex', knex);
 }));
 
-fastify.register(examRoutes);
-fastify.register(sectorRoutes);
-fastify.register(categoryRoutes);
-
-fastify.get('/', async (request, reply) => {
-  reply.send("ExamPortal says hi!");
-});
+fastify.register(examRoutes , { prefix: '/api' });
+fastify.register(sectorRoutes, { prefix: '/api' });
+fastify.register(categoryRoutes , { prefix: '/api' });
+fastify.register(healthRoutes);
 
 const start = async () => {
   try {
