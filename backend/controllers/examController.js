@@ -1,6 +1,18 @@
 const Exam = require('../models/exam');
 
 class ExamController {
+
+  static async getExamsByCategoryAndSector(request, reply){
+    try {
+      const { category_id, sector_id } = request.params;
+      const exams = await Exam.getExamsByCategoryAndSector(category_id, sector_id);
+      return reply.status(200).send(exams);
+    } catch (error) {
+      fastify.log.error(error);
+      return reply.status(500).send('An error occurred while fetching exams');
+    }
+  };
+
   static async createExam(request, reply) {
     try {
       const examData = request.body;

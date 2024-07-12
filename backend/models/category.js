@@ -8,6 +8,9 @@ class Category {
   static async getAll() {
     return knex('categories').select('*');
   }
+  static async getCategoriesBySectorId(sector_id){
+    return knex('categories').where({ sector_id });
+  };
 }
 
 module.exports = Category;

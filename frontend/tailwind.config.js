@@ -10,8 +10,9 @@ module.exports = withMT({
     extend: {
       colors: {
         'foot-blue': '#01354d',
-        'home-bar': '#01354d',
-        'but-sky-blue': '#01354d',
+        'home-bar': '#004e5b',
+        'but-sky-blue': '#40c2c3',
+        'cat-bg' : '#d9f2f2'
       },
     },
   },

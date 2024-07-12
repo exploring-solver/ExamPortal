@@ -12,7 +12,7 @@ const CareerLaunchSection = () => {
         </div>
         <div className="flex items-center">
           <input type="search" placeholder="Search..." className="border rounded-full px-4 py-2 border-teal-500 mr-4" />
-          <a href="#" className="text-blue-500 hover:underline">Sign up / Login Here</a>
+          <a href="#" className="text-teal-500 hover:underline">Sign up / Login Here</a>
         </div>
       </header>
 
