@@ -2,45 +2,45 @@ const ResultService = require('../services/resultService');
 
 class ResultController {
 
-  static async getAllResults(req, res) {
+  static async getAllResults(request,reply) {
     try {
       const results = await ResultService.getAllResults();
-      res.status(200).json(results);
+      reply.code(200).send(results);
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      reply.code(500).send({ error: error.message });
     }
   }
 
-  static async getResultById(req, res) {
+  static async getResultById(request,reply) {
     try {
-      const result = await ResultService.getResultById(req.params.id);
+      const result = await ResultService.getResultById(request.params.id);
       if (!result) {
-        return res.status(404).json({ error: 'Result not found' });
+        return reply.code(404).send({ error: 'Result not found' });
       }
-      res.status(200).json(result);
+      reply.code(200).send(result);
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      reply.code(500).send({ error: error.message });
     }
   }
 
-  static async createResult(req, res) {
+  static async createResult(request,reply) {
     try {
-      const newResult = await ResultService.createResult(req.body);
-      res.status(201).json(newResult);
+      const newResult = await ResultService.createResult(request.body);
+      reply.code(201).send(newResult);
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      reply.code(500).send({ error: error.message });
     }
   }
 
-  static async deleteResultById(req, res) {
+  static async deleteResultById(request,reply) {
     try {
-      const deleted = await ResultService.deleteResultById(req.params.id);
+      const deleted = await ResultService.deleteResultById(request.params.id);
       if (!deleted) {
-        return res.status(404).json({ error: 'Result not found' });
+        return reply.code(404).send({ error: 'Result not found' });
       }
-      res.status(200).json({ message: 'Result deleted successfully' });
+      reply.code(200).send({ message: 'Result deleted successfully' });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      reply.code(500).send({ error: error.message });
     }
   }
 }

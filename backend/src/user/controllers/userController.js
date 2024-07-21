@@ -1,50 +1,53 @@
 const UserService = require('../services/userService');
+const AdminService = require('../services/adminService');
+const StudentService = require('../services/studentService');
+const OrganizationService = require('../services/organizationService');
 
 class UserController {
 
-  static async getAllUsers(req, res) {
+  static async getAllUsers(request,reply) {
     try {
       const users = await UserService.getAllUsers();
-      res.status(200).json(users);
+      reply.code(200).send(users);
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      reply.code(500).send({ error: error.message });
     }
   }
 
-  static async getUserById(req, res) {
+  static async getUserById(request,reply) {
     try {
-      const user = await UserService.getUserById(req.params.id);
+      const user = await UserService.getUserById(request.params.id);
       if (!user) {
-        return res.status(404).json({ error: 'User not found' });
+        return reply.code(404).send({ error: 'User not found' });
       }
-      res.status(200).json(user);
+      reply.code(200).send(user);
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      reply.code(500).send({ error: error.message });
     }
   }
 
-  static async createUser(req, res) {
+  static async createUser(request,reply) {
     try {
-      const newUser = await UserService.createUser(req.body);
-      res.status(201).json(newUser);
+      const newUser = await UserService.createUser(request.body);
+      reply.code(201).send(newUser);
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      reply.code(500).send({ error: error.message });
     }
   }
 
-  static async deleteUserById(req, res) {
+  static async deleteUserById(request,reply) {
     try {
-      const deleted = await UserService.deleteUserById(req.params.id);
+      const deleted = await UserService.deleteUserById(request.params.id);
       if (!deleted) {
-        return res.status(404).json({ error: 'User not found' });
+        return reply.code(404).send({ error: 'User not found' });
       }
-      res.status(200).json({ message: 'User deleted successfully' });
+      reply.code(200).send({ message: 'User deleted successfully' });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      reply.code(500).send({ error: error.message });
     }
   }
-  static async createUser(req, res) {
-    const { role, ...userData } = req.body;
+  static async createUser(request, reply) {
+    const { role, ...userData } = request.body;
 
     try {
       // Create user
@@ -58,12 +61,12 @@ class UserController {
       } else if (role === 'admin') {
         await AdminService.createAdmin({ user_id: user.id });
       } else {
-        return res.status(400).json({ error: 'Invalid role' });
+        return reply.code(400).send({ error: 'Invalid role' });
       }
       
-      res.status(201).json(user);
+      reply.code(201).send(user);
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      reply.code(500).send({ error: error.message });
     }
   }
 }
