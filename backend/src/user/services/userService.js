@@ -1,10 +1,21 @@
 const User = require('../models/user');
 
-const UserService = {
-  getAllUsers: () => User.getAll(),
-  getUserById: (id) => User.getById(id),
-  createUser: (user) => User.create(user),
-  deleteUserById: (id) => User.deleteById(id)
-};
+class UserService {
+  static async getAllUsers() {
+    return User.query();
+  }
+
+  static async getUserById(id) {
+    return User.query().findById(id);
+  }
+
+  static async createUser(data) {
+    return User.query().insert(data);
+  }
+
+  static async deleteUserById(id) {
+    return User.query().deleteById(id);
+  }
+}
 
 module.exports = UserService;

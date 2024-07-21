@@ -6,6 +6,7 @@ import Footer from './components/Standard/Footer';
 import AppNavbar from '../src/components/Standard/AppNavbar'
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
+import QuestionInterface from './components/Exam/QuestionInterface';
 const App = () => {
   return (
     <div className="flex flex-col min-h-screen">
@@ -14,6 +15,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/question" element={<QuestionInterface />} />
           <Route path="/register" element={<Register />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

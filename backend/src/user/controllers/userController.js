@@ -43,6 +43,28 @@ class UserController {
       res.status(500).json({ error: error.message });
     }
   }
-}
+  static async createUser(req, res) {
+    const { role, ...userData } = req.body;
 
+    try {
+      // Create user
+      const user = await UserService.createUser(userData);
+      
+      // Create related record based on role
+      if (role === 'student') {
+        await StudentService.createStudent({ user_id: user.id });
+      } else if (role === 'organization') {
+        await OrganizationService.createOrganization({ user_id: user.id });
+      } else if (role === 'admin') {
+        await AdminService.createAdmin({ user_id: user.id });
+      } else {
+        return res.status(400).json({ error: 'Invalid role' });
+      }
+      
+      res.status(201).json(user);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+}
 module.exports = UserController;

@@ -1,9 +1,9 @@
 const { Model } = require('objection');
 
-class User extends Model {
+class Admin extends Model {
   static get tableName() {
-    return 'users';
+    return 'admins';
   }
 }
 
-module.exports = User;
+module.exports = Admin;
