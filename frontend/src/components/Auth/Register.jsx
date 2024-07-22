@@ -1,8 +1,18 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 
 const Register = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [formData, setFormData] = useState({
+        username: '',
+        phone: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+        role: 'student',
+    });
+    const [error, setError] = useState('');
 
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
@@ -10,6 +20,29 @@ const Register = () => {
 
     const toggleConfirmPasswordVisibility = () => {
         setShowConfirmPassword(!showConfirmPassword);
+    };
+
+    const handleChange = (e) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value,
+        });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (formData.password !== formData.confirmPassword) {
+            setError('Passwords do not match');
+            return;
+        }
+
+        try {
+            const response = await axios.post('http://localhost:3000/api/users', formData);
+            localStorage.setItem('token', response.data.token);
+            alert('Registration successful');
+        } catch (err) {
+            setError(err.response?.data?.error || 'Registration failed');
+        }
     };
 
     return (
@@ -27,18 +60,20 @@ const Register = () => {
                 </div>
 
                 <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-                    <form action="#" method="POST" className="space-y-6">
+                    <form className="space-y-6">
                         <div>
-                            <label htmlFor="name" className="block text-sm font-medium leading-6 text-gray-900">
-                                Name
+                            <label htmlFor="username" className="block text-sm font-medium leading-6 text-gray-900">
+                                Username
                             </label>
                             <div className="mt-2">
                                 <input
-                                    id="name"
-                                    name="name"
+                                    id="username"
+                                    name="username"
                                     type="text"
                                     required
                                     autoComplete="name"
+                                    value={formData.username}
+                                    onChange={handleChange}
                                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                 />
                             </div>
@@ -55,6 +90,8 @@ const Register = () => {
                                     type="tel"
                                     required
                                     autoComplete="tel"
+                                    value={formData.phone}
+                                    onChange={handleChange}
                                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                 />
                             </div>
@@ -71,8 +108,29 @@ const Register = () => {
                                     type="email"
                                     required
                                     autoComplete="email"
+                                    value={formData.email}
+                                    onChange={handleChange}
                                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                 />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label htmlFor="role" className="block text-sm font-medium leading-6 text-gray-900">
+                                Role
+                            </label>
+                            <div className="mt-2">
+                                <select
+                                    id="role"
+                                    name="role"
+                                    required
+                                    value={formData.role}
+                                    onChange={handleChange}
+                                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                >
+                                    <option value="student">Student</option>
+                                    <option value="organization">Organization</option>
+                                </select>
                             </div>
                         </div>
 
@@ -87,6 +145,8 @@ const Register = () => {
                                     type={showPassword ? "text" : "password"}
                                     required
                                     autoComplete="new-password"
+                                    value={formData.password}
+                                    onChange={handleChange}
                                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                 />
                                 <button
@@ -106,10 +166,12 @@ const Register = () => {
                             <div className="mt-2 relative">
                                 <input
                                     id="confirm-password"
-                                    name="confirm-password"
+                                    name="confirmPassword"
                                     type={showConfirmPassword ? "text" : "password"}
                                     required
                                     autoComplete="new-password"
+                                    value={formData.confirmPassword}
+                                    onChange={handleChange}
                                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                 />
                                 <button
@@ -122,9 +184,16 @@ const Register = () => {
                             </div>
                         </div>
 
+                        {error && (
+                            <div className="text-red-500 text-sm mt-2">
+                                {error}
+                            </div>
+                        )}
+
                         <div>
                             <button
                                 type="submit"
+                                onClick={handleSubmit}
                                 className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                             >
                                 Register

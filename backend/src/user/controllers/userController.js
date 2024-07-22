@@ -29,7 +29,7 @@ class UserController {
   }
 
   static async createUser(request, reply) {
-    const { role, password, ...userData } = request.body;
+    const { role, phone, password, confirmPassword, ...userData } = request.body;
     try {
       const hashedPassword = await bcrypt.hash(password, 10);
       const newUser = await UserService.createUser({ ...userData, password: hashedPassword });
@@ -67,9 +67,9 @@ class UserController {
   }
 
   static async login(request, reply) {
-    const { username, password } = request.body;
+    const { identifier, password } = request.body;
     try {
-      const user = await UserService.getUserByUsername(username);
+      const user = await UserService.getUserByUsernameOrEmail(identifier);
       if (!user) {
         return reply.code(401).send({ error: 'Invalid username or password' });
       }

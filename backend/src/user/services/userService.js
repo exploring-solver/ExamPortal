@@ -9,8 +9,8 @@ class UserService {
     return User.query().findById(id);
   }
 
-  static async getUserByUsername(username) {
-    return User.query().where('username', username).first();
+  static async getUserByUsernameOrEmail(identifier) {
+    return User.query().where('username', identifier).orWhere('email', identifier).first();
   }
 
   static async createUser(data) {
