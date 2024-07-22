@@ -5,7 +5,7 @@ const knexConfig = {
   connection: {
     host: '127.0.0.1',
     user: 'root',
-    password: 'aMan@7654$%^&',
+    password: '',
     database: 'examportal'
   },
   migrations: {
