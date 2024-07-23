@@ -5,6 +5,7 @@ async function userRoutes(fastify, options) {
   fastify.get('/:id', UserController.getUserById);
   fastify.post('/', UserController.createUser);
   fastify.delete('/:id', UserController.deleteUserById);
+  fastify.post('/login', UserController.login);
 }
 
 module.exports = userRoutes;

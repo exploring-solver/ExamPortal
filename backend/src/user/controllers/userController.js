@@ -2,10 +2,12 @@ const UserService = require('../services/userService');
 const AdminService = require('../services/adminService');
 const StudentService = require('../services/studentService');
 const OrganizationService = require('../services/organizationService');
+const jwt = require('../../../config/jwt');
+const bcrypt = require('bcryptjs');
 
 class UserController {
 
-  static async getAllUsers(request,reply) {
+  static async getAllUsers(request, reply) {
     try {
       const users = await UserService.getAllUsers();
       reply.code(200).send(users);
@@ -14,7 +16,7 @@ class UserController {
     }
   }
 
-  static async getUserById(request,reply) {
+  static async getUserById(request, reply) {
     try {
       const user = await UserService.getUserById(request.params.id);
       if (!user) {
@@ -26,16 +28,33 @@ class UserController {
     }
   }
 
-  static async createUser(request,reply) {
+  static async createUser(request, reply) {
+    const { role, phone, password, confirmPassword, ...userData } = request.body;
     try {
-      const newUser = await UserService.createUser(request.body);
-      reply.code(201).send(newUser);
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const newUser = await UserService.createUser({ ...userData, password: hashedPassword });
+
+      // Create related record based on role
+      if (role === 'student') {
+        await StudentService.createStudent({ user_id: newUser.id });
+      } else if (role === 'organization') {
+        await OrganizationService.createOrganization({ user_id: newUser.id });
+      } else if (role === 'admin') {
+        await AdminService.createAdmin({ user_id: newUser.id });
+      } else {       
+        // Rollback
+        await UserService.deleteUserById(newUser.id);
+        return reply.code(400).send({ error: 'Invalid role' });
+      }
+
+      const token = jwt.generateToken(newUser);
+      reply.code(201).send({ user: newUser, token });
     } catch (error) {
       reply.code(500).send({ error: error.message });
     }
   }
 
-  static async deleteUserById(request,reply) {
+  static async deleteUserById(request, reply) {
     try {
       const deleted = await UserService.deleteUserById(request.params.id);
       if (!deleted) {
@@ -46,28 +65,26 @@ class UserController {
       reply.code(500).send({ error: error.message });
     }
   }
-  static async createUser(request, reply) {
-    const { role, ...userData } = request.body;
 
+  static async login(request, reply) {
+    const { identifier, password } = request.body;
     try {
-      // Create user
-      const user = await UserService.createUser(userData);
-      
-      // Create related record based on role
-      if (role === 'student') {
-        await StudentService.createStudent({ user_id: user.id });
-      } else if (role === 'organization') {
-        await OrganizationService.createOrganization({ user_id: user.id });
-      } else if (role === 'admin') {
-        await AdminService.createAdmin({ user_id: user.id });
-      } else {
-        return reply.code(400).send({ error: 'Invalid role' });
+      const user = await UserService.getUserByUsernameOrEmail(identifier);
+      if (!user) {
+        return reply.code(401).send({ error: 'Invalid username or password' });
       }
-      
-      reply.code(201).send(user);
+
+      const validPassword = await bcrypt.compare(password, user.password);
+      if (!validPassword) {
+        return reply.code(401).send({ error: 'Invalid username or password' });
+      }
+
+      const token = jwt.generateToken(user);
+      reply.code(200).send({ token });
     } catch (error) {
       reply.code(500).send({ error: error.message });
     }
   }
 }
+
 module.exports = UserController;
