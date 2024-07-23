@@ -7,6 +7,7 @@ async function examRoutes(fastify, options) {
   fastify.post('/', ExamController.createExam);
   fastify.get('/', ExamController.getExams);
   fastify.get('/:exam_id', ExamController.getExamById);
+  fastify.get('/organization/:organizationId', ExamController.getExamsByOrganization);
   fastify.get('/:category_id/:sector_id', ExamController.getExamsByCategoryAndSector);
   fastify.delete('/:id', ExamController.deleteExamById);
   fastify.get('/getall/:id', ExamController.getQuestionsForExam);

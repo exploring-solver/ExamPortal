@@ -13,6 +13,13 @@ class Exam {
     return knex('exams').where({ id }).first();
   }
 
+  static async getExamsByOrganization(organizationId) {
+    return knex('exam_organization')
+      .join('exams', 'exam_organization.exam_id', 'exams.id')
+      .where('exam_organization.organization_id', organizationId)
+      .select('exams.*');
+  }
+
   static async deleteById(id) {
     return knex('exams').where({ id }).del();
   }

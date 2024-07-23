@@ -34,6 +34,17 @@ class ExamController {
     }
   }
 
+  static async createExamForOrganization(request, reply) {
+    try {
+      const examData = request.body;
+      const organizationId = request.params.organizationId; // Get organizationId from params or body
+      const result = await ExamService.createExamForOrganization(examData, organizationId);
+      reply.code(201).send(result);
+    } catch (error) {
+      reply.code(500).send({ error });
+    }
+  }
+
   static async getExams(request, reply) {
     try {
       const exams = await ExamService.getAll();
@@ -42,6 +53,18 @@ class ExamController {
       reply.code(500).send({ error: 'Internal Server Error' });
     }
   }
+
+  static async getExamsByOrganization(request, reply) {
+    try {
+      const { organizationId } = request.params;
+      const exams = await ExamService.getExamsByOrganization(organizationId);
+      return reply.status(200).send(exams);
+    } catch (error) {
+      fastify.log.error(error);
+      return reply.status(500).send('An error occurred while fetching exams');
+    }
+  }
+
   static async deleteExamById(request,reply) {
     try {
       const deleted = await ExamService.deleteExamById(request.params.id);

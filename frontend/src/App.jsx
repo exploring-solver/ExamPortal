@@ -10,6 +10,7 @@ import QuestionInterface from './components/Exam/QuestionInterface';
 import ExamContainer from './components/Exam/ExamContainer';
 import UserResults from './components/Exam/UserResults';
 import ExamResult from './components/Exam/ExamResult';
+import OrganizationDashboard from './components/Organization/OrganizationDashboard';
 const App = () => {
   return (
     <div className="flex flex-col min-h-screen">
@@ -21,6 +22,7 @@ const App = () => {
           <Route path="/question" element={<QuestionInterface />} />
           <Route path="/results" element={<UserResults />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/organization" element={<OrganizationDashboard />} />
           <Route path="/exam/:examId" element={<ExamContainer />} />
           <Route path="/exam/:examId/question/:questionId" element={<QuestionInterface />} />
           <Route path="/exam/:examId/result" element={<UserResults />} />

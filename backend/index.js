@@ -5,6 +5,7 @@ const categoryRoutes = require('./routes/categoryRoutes');
 const knex = require('./config/knexfile');
 const healthRoutes = require('./src/health/routes/health');
 const userRoutes = require('./src/user/userRoutes');
+// const organizationRoutes = require('./src/organization/organizationRoutes');
 const questionRoutes = require('./src/question/questionRoutes');
 
 fastify.register(require('@fastify/formbody'));
@@ -35,6 +36,7 @@ fastify.register(examRoutes , { prefix: '/api/exams' });
 fastify.register(sectorRoutes, { prefix: '/api' });
 fastify.register(categoryRoutes , { prefix: '/api' });
 fastify.register(userRoutes , { prefix: '/api/users' });
+// fastify.register(organizationRoutes, { prefix: '/api' });
 fastify.register(questionRoutes , { prefix: '/api/questions' });
 fastify.register(healthRoutes);
 

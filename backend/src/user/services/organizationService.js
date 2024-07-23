@@ -9,6 +9,11 @@ class OrganizationService {
     return Organization.query().findById(id);
   }
 
+  static async getOrganizationIdByUserId(userId) {
+    const organization = await Organization.getByUserId(userId); // Fetch organization details by userId
+    return organization ? organization.id : null;
+  }
+
   static async createOrganization(data) {
     return Organization.query().insert(data);
   }

@@ -23,6 +23,20 @@ class OrganizationController {
     }
   }
 
+  static async getOrganizationIdByUserId(request, reply) {
+    try {
+      const { userId } = request.user.id; // Get userId from the authenticated request
+      console.log('User ID:', userId);
+      const organizationId = await OrganizationService.getOrganizationIdByUserId(userId);
+      if (!organizationId) {
+        return reply.code(404).send({ error: 'Organization not found for the user' });
+      }
+      reply.send({ organizationId });
+    } catch (error) {
+      reply.code(500).send(error);
+    }
+  }
+
   static async createOrganization(req, res) {
     try {
       const newOrganization = await OrganizationService.createOrganization(req.body);
