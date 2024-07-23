@@ -10,14 +10,16 @@ const QuestionInterface = () => {
   const [loading, setLoading] = useState(true);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [currentQuestion, setCurrentQuestion] = useState(null);
-  const [answered, setAnswered] = useState(0);
-  const [notAnswered, setNotAnswered] = useState(0);
-  const [notVisited, setNotVisited] = useState(0);
-  const [markedForReview, setMarkedForReview] = useState(0);
-  const [userAnswers, setUserAnswers] = useState({});
+  const [examState, setExamState] = useState({
+    answered: 0,
+    notAnswered: 0,
+    notVisited: 0,
+    markedForReview: 0,
+    userAnswers: {},
+    questionStatus: {}
+  });
   const [selectedOption, setSelectedOption] = useState(null);
   const [submitting, setSubmitting] = useState(false);
-  const [questionStatus, setQuestionStatus] = useState({});
 
   const fetchExamData = useCallback(async () => {
     try {
@@ -28,18 +30,20 @@ const QuestionInterface = () => {
       const questionsResponse = await fetch(`http://localhost:3000/api/exams/getall/${examId}`);
       const questionsData = await questionsResponse.json();
       setQuestions(questionsData);
-      setNotAnswered(questionsData.length);
-      setNotVisited(questionsData.length - 1);
+
+      const storedState = JSON.parse(localStorage.getItem(`exam_${examId}_state`) || '{}');
+      setExamState(prevState => ({
+        ...prevState,
+        notAnswered: questionsData.length,
+        notVisited: questionsData.length - 1,
+        ...storedState
+      }));
 
       setLoading(false);
     } catch (error) {
       console.error('Error fetching exam data:', error);
       setLoading(false);
     }
-    const storedAnswers = JSON.parse(localStorage.getItem(`exam_${examId}_answers`) || '{}');
-    setUserAnswers(storedAnswers);
-    const storedStatus = JSON.parse(localStorage.getItem(`exam_${examId}_status`) || '{}');
-    setQuestionStatus(storedStatus);
   }, [examId]);
 
   useEffect(() => {
@@ -53,6 +57,7 @@ const QuestionInterface = () => {
           const response = await fetch(`http://localhost:3000/api/questions/${questions[currentQuestionIndex].question_id}`);
           const questionData = await response.json();
           setCurrentQuestion(questionData);
+          setSelectedOption(examState.userAnswers[questionData.id] || null);
         } catch (error) {
           console.error('Error fetching question:', error);
         }
@@ -60,37 +65,42 @@ const QuestionInterface = () => {
     };
 
     fetchQuestion();
-  }, [currentQuestionIndex, questions]);
+  }, [currentQuestionIndex, questions, examState.userAnswers]);
+
+  useEffect(() => {
+    localStorage.setItem(`exam_${examId}_state`, JSON.stringify(examState));
+  }, [examId, examState]);
 
   if (loading) {
-    return <div>No questions for this exam.</div>;
+    return <div>Loading exam questions...</div>;
   }
 
-  const updateQuestionStatus = (index, status) => {
-    setQuestionStatus(prev => {
-      const newStatus = { ...prev, [index]: status };
-      localStorage.setItem(`exam_${examId}_status`, JSON.stringify(newStatus));
-      return newStatus;
+  const updateExamState = (updates) => {
+    setExamState(prevState => {
+      const newState = { ...prevState, ...updates };
+      localStorage.setItem(`exam_${examId}_state`, JSON.stringify(newState));
+      return newState;
     });
   };
 
   const handleAnswer = (answer) => {
+    const isNewAnswer = !examState.userAnswers[currentQuestion.id];
     setSelectedOption(answer);
-    setUserAnswers(prev => {
-      const newAnswers = { ...prev, [currentQuestion.id]: answer };
-      localStorage.setItem(`exam_${examId}_answers`, JSON.stringify(newAnswers));
-      console.log('Answer stored:', { questionId: currentQuestion.id, answer });
-      return newAnswers;
+    updateExamState({
+      userAnswers: { ...examState.userAnswers, [currentQuestion.id]: answer },
+      questionStatus: { ...examState.questionStatus, [currentQuestionIndex]: 'answered' },
+      answered: isNewAnswer ? examState.answered + 1 : examState.answered,
+      notAnswered: isNewAnswer ? examState.notAnswered - 1 : examState.notAnswered
     });
-    updateQuestionStatus(currentQuestionIndex, 'answered');
   };
 
   const handleSaveAndNext = () => {
     if (selectedOption) {
-      setAnswered(prev => Math.min(prev + 1, questions.length));
-      setNotAnswered(prev => Math.max(prev - 1, 0));
-    } else {
-      updateQuestionStatus(currentQuestionIndex, 'visited');
+      handleAnswer(selectedOption);
+    } else if (examState.questionStatus[currentQuestionIndex] !== 'answered') {
+      updateExamState({
+        questionStatus: { ...examState.questionStatus, [currentQuestionIndex]: 'visited' }
+      });
     }
     handleNext();
   };
@@ -98,21 +108,23 @@ const QuestionInterface = () => {
   const handleNext = () => {
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
-      setNotVisited(prev => Math.max(prev - 1, 0));
-      setSelectedOption(userAnswers[questions[currentQuestionIndex + 1].question_id] || null);
+      updateExamState({
+        notVisited: Math.max(examState.notVisited - 1, 0)
+      });
     }
   };
 
   const handlePrevious = () => {
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex(currentQuestionIndex - 1);
-      setSelectedOption(userAnswers[questions[currentQuestionIndex - 1].question_id] || null);
     }
   };
 
   const handleMarkForReview = () => {
-    setMarkedForReview(prev => Math.min(prev + 1, questions.length));
-    updateQuestionStatus(currentQuestionIndex, 'review');
+    updateExamState({
+      markedForReview: examState.markedForReview + 1,
+      questionStatus: { ...examState.questionStatus, [currentQuestionIndex]: 'review' }
+    });
   };
 
   const handleSubmit = async () => {
@@ -128,13 +140,12 @@ const QuestionInterface = () => {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
           },
-          body: JSON.stringify({ answers: userAnswers, userId: payload.id }),
+          body: JSON.stringify({ answers: examState.userAnswers, userId: payload.id }),
         });
 
         const result = await response.json();
         console.log('Exam submitted successfully:', result);
-        localStorage.removeItem(`exam_${examId}_answers`);
-        localStorage.removeItem(`exam_${examId}_status`);
+        localStorage.removeItem(`exam_${examId}_state`);
         navigate(`/exam/${examId}/result`, { state: { result } });
       } catch (error) {
         console.error('Error submitting exam:', error);
@@ -186,7 +197,8 @@ const QuestionInterface = () => {
                 <button
                   key={option}
                   onClick={() => handleAnswer(option)}
-                  className={`w-full text-left p-2 border rounded ${selectedOption === option ? 'bg-blue-200' : ''}`}
+                  className={`w-full text-left p-2 border rounded ${selectedOption === option ? 'bg-green-200' : ''
+                    }`}
                 >
                   {option}. {currentQuestion[`option_${option.toLowerCase()}`]}
                 </button>
@@ -208,18 +220,18 @@ const QuestionInterface = () => {
         <div className="">
           <div className="bg-gray-100 p-4">
             <div className="grid grid-cols-2 gap-2 text-sm">
-              <div className="bg-gray-300 p-2">{notVisited} Not Visited</div>
-              <div className="bg-red-500 text-white p-2">{notAnswered} Not Answered</div>
-              <div className="bg-green-500 text-white p-2">{answered} Answered</div>
-              <div className="bg-purple-500 text-white p-2">{markedForReview} Marked for Review</div>
+              <div className="bg-gray-300 p-2">{examState.notVisited} Not Visited</div>
+              <div className="bg-red-500 text-white p-2">{examState.notAnswered} Not Answered</div>
+              <div className="bg-green-500 text-white p-2">{examState.answered} Answered</div>
+              <div className="bg-purple-500 text-white p-2">{examState.markedForReview} Marked for Review</div>
             </div>
           </div>
           <div className="mt-4 grid grid-cols-8 gap-2">
             {questions.map((_, i) => {
               let bgColor = 'bg-gray-300'; // Not visited
-              if (questionStatus[i] === 'answered') bgColor = 'bg-green-500';
-              else if (questionStatus[i] === 'visited') bgColor = 'bg-red-500';
-              else if (questionStatus[i] === 'review') bgColor = 'bg-purple-500';
+              if (examState.questionStatus[i] === 'answered') bgColor = 'bg-green-500';
+              else if (examState.questionStatus[i] === 'visited') bgColor = 'bg-red-500';
+              else if (examState.questionStatus[i] === 'review') bgColor = 'bg-purple-500';
 
               return (
                 <button
