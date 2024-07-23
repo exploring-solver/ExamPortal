@@ -5,6 +5,7 @@ const categoryRoutes = require('./routes/categoryRoutes');
 const knex = require('./config/knexfile');
 const healthRoutes = require('./src/health/routes/health');
 const userRoutes = require('./src/user/userRoutes');
+const questionRoutes = require('./src/question/questionRoutes');
 
 fastify.register(require('@fastify/formbody'));
 fastify.register(require('@fastify/cors'), (instance) => {
@@ -30,10 +31,11 @@ fastify.register(require('fastify-plugin')(async (fastify) => {
 
 
 //Routes
-fastify.register(examRoutes , { prefix: '/api' });
+fastify.register(examRoutes , { prefix: '/api/exams' });
 fastify.register(sectorRoutes, { prefix: '/api' });
 fastify.register(categoryRoutes , { prefix: '/api' });
 fastify.register(userRoutes , { prefix: '/api/users' });
+fastify.register(questionRoutes , { prefix: '/api/questions' });
 fastify.register(healthRoutes);
 
 const start = async () => {

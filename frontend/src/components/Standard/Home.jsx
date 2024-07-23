@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import SectorTabs from '../Exam/SectorTabs';
 import ExamsList from '../Exam/ExamsList';
-import { Button } from '@material-tailwind/react';
 import CareerLaunchSection from './CareerLaunchSection';
 
 const Home = () => {
@@ -12,6 +10,7 @@ const Home = () => {
   const [selectedSector, setSelectedSector] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState(1);
   const [examType, setExamType] = useState('all'); // 'all', 'upcoming', or 'previous'
+  const currentDate = new Date();
 
   useEffect(() => {
     const fetchSectors = async () => {
@@ -42,16 +41,22 @@ const Home = () => {
   const fetchExams = async () => {
     const response = await axios.get(`http://localhost:3000/api/exams/${selectedCategory}/${selectedSector}`);
     const allExams = response.data;
-    
+
     let filteredExams;
     if (examType === 'upcoming') {
-      filteredExams = allExams.filter(exam => exam.status === 'upcoming');
+      filteredExams = allExams.filter(exam => {
+        const examDate = new Date(exam.exam_date);
+        return examDate >= currentDate || (examDate.toDateString() === currentDate.toDateString());
+      });
     } else if (examType === 'previous') {
-      filteredExams = allExams.filter(exam => exam.status === 'previous');
+      filteredExams = allExams.filter(exam => {
+        const examDate = new Date(exam.exam_date);
+        return examDate < currentDate;
+      });
     } else {
       filteredExams = allExams;
     }
-    
+
     setExams(filteredExams);
   };
 
@@ -69,6 +74,7 @@ const Home = () => {
   const handleExamTypeClick = (type) => {
     setExamType(type);
   };
+
   return (
     <div className="mx-auto pb-10">
       <CareerLaunchSection />
@@ -103,7 +109,7 @@ const Home = () => {
               ))}
             </div>
           )}
-           <div className="w-3/4 text-start">
+          <div className="w-3/4 text-start">
             <div className="flex justify-between">
               <h2 className="text-lg font- mb-4 text-start">GOVERNMENT ADMINISTRATION EXAMS</h2>
               <div className="flex">
@@ -124,7 +130,7 @@ const Home = () => {
             {exams.length === 0 ? (
               <p>No exams here yet</p>
             ) : (
-              <ExamsList exams={exams} />
+              <ExamsList exams={exams} showCurrentDate={examType === 'upcoming'} />
             )}
           </div>
         </div>

@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router';
 
 const Login = () => {
     const [formData, setFormData] = useState({ identifier: '', password: '' });
     const [error, setError] = useState('');
-
+    const navigate = useNavigate();
     const handleChange = (e) => {
         setFormData({
             ...formData,
@@ -18,6 +19,7 @@ const Login = () => {
         try {
             const response = await axios.post('http://localhost:3000/api/users/login', formData);
             localStorage.setItem('token', response.data.token);
+            navigate('/')
             alert('Login successful');
         } catch (err) {
             setError(err.response?.data?.error || 'Login failed');

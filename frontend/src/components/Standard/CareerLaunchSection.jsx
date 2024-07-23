@@ -1,18 +1,30 @@
 import React from 'react';
 import rightImg from "../../assets/rightimg.png";
 import leftImg from "../../assets/leftimg.png";
+import { useAuth } from '../Context/Auth/AuthContext';
+import { Button } from '@material-tailwind/react';
 
 const CareerLaunchSection = () => {
+  const { isAuthenticated, logout, user } = useAuth();
   return (
     <div className="bg-white p-6 md:p-10">
       <header className="flex justify-between items-center mb-8">
         <div className="flex items-center">
           <img src="logo.png" alt="Career Launch Icon" className="w-64 mr-3" />
-
         </div>
+
+        <p className='text-teal-500 md:text-xl font-semibold border-[1px] border-teal-500 p-2 rounded mx-4 '>Welcome {user.username}</p>
         <div className="flex items-center">
           <input type="search" placeholder="Search..." className="border rounded-full px-4 py-2 border-teal-500 mr-4" />
-          <a href="/login" className="text-teal-500 hover:underline">Sign up / Login Here</a>
+          {isAuthenticated ? (
+            <div className='gap-2 flex flex-wrap items-center '>
+              <a href="/login" className="text-teal-500 hover:underline">See past results</a>
+              <Button color='teal' onClick={logout}>Logout</Button>
+            </div>
+
+          ) : (
+            <a href="/login" className="text-teal-500 hover:underline">Sign up / Login Here</a>
+          )}
         </div>
       </header>
 
@@ -36,7 +48,7 @@ const CareerLaunchSection = () => {
         </div>
 
         <div className="md:w-1/2 flex justify-center">
-          <img src={rightImg} alt="Interview Illustration" className="w-[300px]"  />
+          <img src={rightImg} alt="Interview Illustration" className="w-[300px]" />
         </div>
       </div>
     </div>

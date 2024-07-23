@@ -5,8 +5,8 @@ class ResultService {
     return Result.query();
   }
 
-  static async getResultById(id) {
-    return Result.query().findById(id);
+  static async getResultById(candidate_id) {
+    return Result.query().where('candidate_id', candidate_id);
   }
 
   static async createResult(data) {

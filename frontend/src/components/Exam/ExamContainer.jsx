@@ -1,8 +1,9 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import ExamGuidelines from './ExamGuidelines';
+import QuestionInterface from './QuestionInterface';
 
-const ExamContext = createContext();
-
-export const ExamProvider = ({ children }) => {
+const ExamContainer = () => {
     const { examId } = useParams();
     const [exam, setExam] = useState(null);
     const [questions, setQuestions] = useState([]);
@@ -29,13 +30,15 @@ export const ExamProvider = ({ children }) => {
         fetchExamData();
     }, [examId]);
 
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
     return (
-        <ExamContext.Provider value={{ exam, questions }}>
-            {children}
-        </ExamContext.Provider>
+        <div>
+            <ExamGuidelines exam={exam} />
+        </div>
     );
 };
 
-export const useExam = () => {
-    return useContext(ExamContext);
-};
+export default ExamContainer;

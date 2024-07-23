@@ -1,48 +1,48 @@
-const ExamQuestionService = require('../services/examQuestionService');
+const QuestionService = require('../services/questionService');
 
-class ExamQuestionController {
+class QuestionController {
 
-  static async getAllExamQuestions(req, res) {
+  static async getAllQuestions(request, reply) {
     try {
-      const examQuestions = await ExamQuestionService.getAllExamQuestions();
-      res.status(200).json(examQuestions);
+      const questions = await QuestionService.getAllQuestions();
+      reply.status(200).send(questions);
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      reply.status(500).send({ error: error.message });
     }
   }
 
-  static async getExamQuestionById(req, res) {
+  static async getQuestionById(request, reply) {
     try {
-      const examQuestion = await ExamQuestionService.getExamQuestionById(req.params.id);
-      if (!examQuestion) {
-        return res.status(404).json({ error: 'ExamQuestion not found' });
+      const question = await QuestionService.getQuestionById(request.params.id);
+      if (!question) {
+        return reply.status(404).send({ error: 'Question not found' });
       }
-      res.status(200).json(examQuestion);
+      reply.status(200).send(question);
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      reply.status(500).send({ error: error.message });
     }
   }
 
-  static async createExamQuestion(req, res) {
+  static async createQuestion(request, reply) {
     try {
-      const newExamQuestion = await ExamQuestionService.createExamQuestion(req.body);
-      res.status(201).json(newExamQuestion);
+      const newQuestion = await QuestionService.createQuestion(request.body);
+      reply.status(201).send(newQuestion);
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      reply.status(500).send({ error: error.message });
     }
   }
 
-  static async deleteExamQuestionById(req, res) {
+  static async deleteQuestionById(request, reply) {
     try {
-      const deleted = await ExamQuestionService.deleteExamQuestionById(req.params.id);
+      const deleted = await QuestionService.deleteQuestionById(request.params.id);
       if (!deleted) {
-        return res.status(404).json({ error: 'ExamQuestion not found' });
+        return reply.status(404).send({ error: 'Question not found' });
       }
-      res.status(200).json({ message: 'ExamQuestion deleted successfully' });
+      reply.status(200).send({ message: 'Question deleted successfully' });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      reply.status(500).send({ error: error.message });
     }
   }
 }
 
-module.exports = ExamQuestionController;
+module.exports = QuestionController;

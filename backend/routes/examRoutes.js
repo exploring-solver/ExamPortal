@@ -1,9 +1,17 @@
+//Note: this file is being used
+
 const ExamController = require('../controllers/examController');
+const ResultController = require('../src/exam/controllers/resultController');
 
 async function examRoutes(fastify, options) {
-  fastify.post('/exams', ExamController.createExam);
-  fastify.get('/exams', ExamController.getExams);
-  fastify.get('/exams/:category_id/:sector_id', ExamController.getExamsByCategoryAndSector);
+  fastify.post('/', ExamController.createExam);
+  fastify.get('/', ExamController.getExams);
+  fastify.get('/:exam_id', ExamController.getExamById);
+  fastify.get('/:category_id/:sector_id', ExamController.getExamsByCategoryAndSector);
+  fastify.delete('/:id', ExamController.deleteExamById);
+  fastify.get('/getall/:id', ExamController.getQuestionsForExam);
+  fastify.post('/:examId/result', ResultController.submitExam);
+  fastify.get('/:id/result', ResultController.getResultById);
 }
 
 module.exports = examRoutes;
