@@ -36,7 +36,7 @@ class ExamController {
 
   static async createExamForOrganization(request, reply) {
     try {
-      const examData = request.body;
+      const {description, ...examData} = request.body;
       const organizationId = request.params.organizationId; // Get organizationId from params or body
       const result = await ExamService.createExamForOrganization(examData, organizationId);
       reply.code(201).send(result);
@@ -65,7 +65,7 @@ class ExamController {
     }
   }
 
-  static async deleteExamById(request,reply) {
+  static async deleteExamById(request, reply) {
     try {
       const deleted = await ExamService.deleteExamById(request.params.id);
       if (!deleted) {
@@ -85,6 +85,7 @@ class ExamController {
       reply.code(500).send({ error: error.message });
     }
   }
+  
 }
 
 module.exports = ExamController;

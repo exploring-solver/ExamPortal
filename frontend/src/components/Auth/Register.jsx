@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router';
 
 const Register = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         username: '',
         phone: '',
@@ -40,6 +42,7 @@ const Register = () => {
             const response = await axios.post('http://localhost:3000/api/users', formData);
             localStorage.setItem('token', response.data.token);
             alert('Registration successful');
+            navigate('/');
         } catch (err) {
             setError(err.response?.data?.error || 'Registration failed');
         }

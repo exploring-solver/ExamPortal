@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router';
+import { decodeToken } from 'react-jwt';
 
 const Login = () => {
     const [formData, setFormData] = useState({ identifier: '', password: '' });
@@ -19,7 +20,16 @@ const Login = () => {
         try {
             const response = await axios.post('http://localhost:3000/api/users/login', formData);
             localStorage.setItem('token', response.data.token);
-            navigate('/')
+            // Decode the token
+            const decodedToken = decodeToken(response.data.token);
+
+            // Check the role and navigate accordingly
+            if (decodedToken.role === 'organization') {
+                navigate('/organization');
+            } else {
+                navigate('/');
+            }
+
             alert('Login successful');
         } catch (err) {
             setError(err.response?.data?.error || 'Login failed');

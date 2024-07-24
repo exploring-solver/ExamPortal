@@ -1,4 +1,5 @@
 const OrganizationService = require('../services/organizationService');
+const jwt = require('../../../config/jwt');
 
 class OrganizationController {
 
@@ -25,7 +26,10 @@ class OrganizationController {
 
   static async getOrganizationIdByUserId(request, reply) {
     try {
-      const { userId } = request.user.id; // Get userId from the authenticated request
+      // const { userId } = request.user.id; // Get userId from the authenticated request
+  
+      const userId = jwt.verifyToken(request.headers['authorization'].split(' ')[1]).id;
+
       console.log('User ID:', userId);
       const organizationId = await OrganizationService.getOrganizationIdByUserId(userId);
       if (!organizationId) {

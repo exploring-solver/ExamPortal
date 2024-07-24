@@ -1,4 +1,3 @@
-import React from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
 import Home from './components/Standard/Home';
 import NotFound from './components/Standard/NotFound';
@@ -11,6 +10,7 @@ import ExamContainer from './components/Exam/ExamContainer';
 import UserResults from './components/Exam/UserResults';
 import ExamResult from './components/Exam/ExamResult';
 import OrganizationDashboard from './components/Organization/OrganizationDashboard';
+import ExamPage from './components/Exam/ExamPage';
 const App = () => {
   return (
     <div className="flex flex-col min-h-screen">
@@ -23,6 +23,7 @@ const App = () => {
           <Route path="/results" element={<UserResults />} />
           <Route path="/register" element={<Register />} />
           <Route path="/organization" element={<OrganizationDashboard />} />
+          <Route path="/examOrganization/:examId" element={<ExamPage />} />
           <Route path="/exam/:examId" element={<ExamContainer />} />
           <Route path="/exam/:examId/question/:questionId" element={<QuestionInterface />} />
           <Route path="/exam/:examId/result" element={<UserResults />} />

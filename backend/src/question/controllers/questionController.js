@@ -43,6 +43,16 @@ class QuestionController {
       reply.status(500).send({ error: error.message });
     }
   }
+
+  static async getQuestionsByExamId(req, reply) {
+    try {
+      const { examId } = req.params;
+      const questions = await QuestionService.getQuestionsByExamId(examId);
+      reply.send(questions);
+    } catch (err) {
+      reply.status(500).send( err );
+    }
+}
 }
 
 module.exports = QuestionController;

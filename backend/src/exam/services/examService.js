@@ -1,5 +1,7 @@
 const Exam = require('../../../models/exam');
 const ExamOrganization = require('../models/examOrganization'); // Import the model if it exists
+const ExamQuestion = require('../../question/models/examQuestion');
+const { transaction } = require('objection');
 
 class ExamService {
   static async getAllExams() {
@@ -33,7 +35,13 @@ class ExamService {
   }
 
   static async deleteExamById(id) {
-    return Exam.deleteById(id);
+    return transaction(Exam.knex(), async (trx) => {
+      // Delete related exam_questions
+      await ExamQuestion.query(trx).where({ exam_id: id }).delete();
+      // Delete the exam
+      const deletedExam = await Exam.query(trx).deleteById(id);
+      return deletedExam;
+    });
   }
 
   static async getQuestionsForExam(examId) {

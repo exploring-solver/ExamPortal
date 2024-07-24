@@ -1,6 +1,12 @@
 const knex = require('../config/knexfile');
+const { Model } = require('objection');
+Model.knex(knex);
+class Exam extends Model{
 
-class Exam {
+  static get tableName() {
+    return 'exams';
+  }
+
   static async create(examData) {
     return knex('exams').insert(examData);
   }

@@ -35,11 +35,12 @@ class QuestionService {
 
   static async deleteQuestionById(id) {
     return transaction(Question.knex(), async (trx) => {
-      const deletedQuestion = await Question.query(trx).deleteById(id);
       await ExamQuestion.query(trx).where({ question_id: id }).delete();
+      const deletedQuestion = await Question.query(trx).deleteById(id);
       return deletedQuestion;
     });
   }
+  
 }
 
 module.exports = QuestionService;
