@@ -21,10 +21,11 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  ListItemSecondaryAction
+  ListItemSecondaryAction,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
+import ChatIcon from '@mui/icons-material/Chat';
 
 const ExamPage = () => {
   const { examId } = useParams();
@@ -43,13 +44,14 @@ const ExamPage = () => {
   });
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [questionToDelete, setQuestionToDelete] = useState(null);
-
+  const [aiModalOpen, setAiModalOpen] = useState(false);
+  const [chatInput, setChatInput] = useState('');
+  
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
         const token = localStorage.getItem('token');
 
-        // Fetch all question IDs for the exam
         const response = await axios.get(`http://127.0.0.1:3000/api/exams/getall/${examId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -96,7 +98,6 @@ const ExamPage = () => {
         subject: '',
         category: ''
       });
-      // Fetch the updated list of questions
       const response = await axios.get(`http://127.0.0.1:3000/api/exams/getall/${examId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -136,6 +137,29 @@ const ExamPage = () => {
     }
   };
 
+  const handleGenerateQuestions = async () => {
+    try {
+      const response = await axios.post('http://panel.mait.ac.in:3012/generate', { prompt: chatInput });
+      const generatedQuestions = response.data; // Assuming the response is an array of questions
+      const [firstQuestion] = generatedQuestions;
+
+      if (firstQuestion) {
+        setNewQuestion({
+          ...newQuestion,
+          question: firstQuestion.question,
+          option_a: firstQuestion.option_a,
+          option_b: firstQuestion.option_b,
+          option_c: firstQuestion.option_c,
+          option_d: firstQuestion.option_d,
+          answer: firstQuestion.answer,
+        });
+        setAiModalOpen(false);
+      }
+    } catch (error) {
+      setError('Error generating questions with AI');
+    }
+  };
+
   if (loading) return <CircularProgress />;
   if (error) return <Alert severity="error">{error}</Alert>;
 
@@ -144,6 +168,15 @@ const ExamPage = () => {
       <Typography variant="h4" component="h1" gutterBottom>
         Exam {examId} - Questions
       </Typography>
+      <Button
+        variant="contained"
+        color="secondary"
+        startIcon={<ChatIcon />}
+        onClick={() => setAiModalOpen(true)}
+        style={{ marginBottom: 16 }}
+      >
+        Generate Questions using AI
+      </Button>
       <Paper style={{ padding: 16 }}>
         <List>
           {questions.map((question) => (
@@ -242,6 +275,32 @@ const ExamPage = () => {
           Add Question
         </Button>
       </Paper>
+
+      {/* AI Question Generation Modal */}
+      <Dialog
+        open={aiModalOpen}
+        onClose={() => setAiModalOpen(false)}
+      >
+        <DialogTitle>Generate Questions using AI</DialogTitle>
+        <DialogContent>
+          <TextField
+            label="Enter a prompt for AI"
+            multiline
+            fullWidth
+            rows={4}
+            value={chatInput}
+            onChange={(e) => setChatInput(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setAiModalOpen(false)} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleGenerateQuestions} color="primary">
+            Send
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       {/* Confirmation Dialog */}
       <Dialog

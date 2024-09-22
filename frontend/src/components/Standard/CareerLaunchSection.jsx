@@ -1,11 +1,20 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import rightImg from "../../assets/rightimg.png";
 import leftImg from "../../assets/leftimg.png";
 import { useAuth } from '../Context/Auth/AuthContext';
 import { Button } from '@material-tailwind/react';
 
 const CareerLaunchSection = () => {
-  const { isAuthenticated, logout, user } = useAuth();
+  const { isAuthenticated, user, loading, logout } = useAuth();
+
+  useEffect(() => {
+    console.log("Authentication status changed: ", isAuthenticated);
+  }, [isAuthenticated, user]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className="bg-white p-6 md:p-10">
       <header className="flex justify-between items-center mb-8">
@@ -25,7 +34,6 @@ const CareerLaunchSection = () => {
               <a href="/login" className="text-teal-500 hover:underline">See past results</a>
               <Button color='teal' onClick={logout}>Logout</Button>
             </div>
-
           ) : (
             <a href="/login" className="text-teal-500 hover:underline">Sign up / Login Here</a>
           )}
@@ -36,7 +44,6 @@ const CareerLaunchSection = () => {
         <div className="md:w-1/2 mb-6 md:mb-0 flex flex-wrap">
           <div className="flex mb-6">
             <img src={leftImg} alt="Career Launch Icon" className="mr-3 w-[300px]" />
-
           </div>
           <div>
             <p className="text-lg mb-6 text-teal-500 w-[400px]">

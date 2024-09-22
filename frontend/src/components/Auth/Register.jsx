@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router';
+import { useAuth } from '../Context/Auth/AuthContext';
 
 const Register = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const navigate = useNavigate();
+    const { login } = useAuth();  // Use login from AuthContext
     const [formData, setFormData] = useState({
         username: '',
         phone: '',
@@ -40,7 +42,16 @@ const Register = () => {
 
         try {
             const response = await axios.post('http://localhost:3000/api/users', formData);
-            localStorage.setItem('token', response.data.token);
+            const token = response.data.token;
+
+            // Use login method from context to update authentication state
+            login(token);
+            const decodedToken = decodeToken(token);
+            if (decodedToken.role === 'organization') {
+                navigate('/organization');
+            } else {
+                navigate('/');
+            }
             alert('Registration successful');
             navigate('/');
         } catch (err) {
